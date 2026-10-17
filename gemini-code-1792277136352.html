@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El gran repte de l’ortografia</title>
+  <style>
+    :root {
+      --bg-color: #1a0b36;
+      --card-bg: #2a1654;
+      --accent-yellow: #ffd700;
+      --text-white: #ffffff;
+      --correct-green: #28a745;
+      --error-red: #dc3545;
+      --button-blue: #233588;
+      --button-hover: #364cb2;
+      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-white);
+      font-family: var(--font-family);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background-color: var(--card-bg);
+      border: 3px solid var(--accent-yellow);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
+    }
+
+    /* Portada */
+    .screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    h1 {
+      color: var(--accent-yellow);
+      font-size: 2.2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    p.instructions {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      max-width: 650px;
+      color: #e0e0e0;
+    }
+
+    .btn-main {
+      background-color: var(--accent-yellow);
+      color: #000;
+      font-size: 1.3rem;
+      font-weight: bold;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .btn-main:hover, .btn-main:focus {
+      transform: scale(1.05);
+      background-color: #ffe44d;
+      outline: 3px solid #fff;
+    }
+
+    /* Tauler de Joc */
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--accent-yellow);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .level-badge, .score-badge {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--accent-yellow);
+    }
+
+    .question-box {
+      background-color: #15092b;
+      border: 2px solid var(--accent-yellow);
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 25px;
+      min-height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .question-text {
+      font-size: 1.3rem;
+      line-height: 1.4;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .option-btn {
+      background-color: var(--button-blue);
+      border: 2px solid var(--accent-yellow);
+      border-radius: 10px;
+      color: var(--text-white);
+      padding: 15px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .option-btn:hover:not(:disabled), .option-btn:focus:not(:disabled) {
+      background-color: var(--button-hover);
+      outline: 2px solid #fff;
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .option-letter {
+      color: var(--accent-yellow);
+      font-weight: bold;
+      margin-right: 12px;
+      font-size: 1.3rem;
+    }
+
+    /* Feedback i Estats */
+    .correct-selection {
+      background-color: var(--correct-green) !important;
+      border-color: #fff !important;
+    }
+
+    .feedback-area {
+      width: 100%;
+      text-align: center;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .feedback-message {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .correct-word-display {
+      font-size: 1.8rem;
+      color: var(--accent-yellow);
+      text-decoration: underline;
+      letter-spacing: 1px;
+    }
+
+    /* Escala de Punts Sidebar/Footer */
+    .ladder {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      width: 100%;
+    }
+
+    .ladder-step {
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #aaa;
+    }
+
+    .ladder-step.active {
+      background: var(--accent-yellow);
+      color: #000;
+      font-weight: bold;
+    }
+
+    .ladder-step.passed {
+      color: var(--text-white);
+      background: rgba(40, 167, 69, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- PORTADA -->
+    <div id="screen-start" class="screen">
+      <h1>El gran repte de l’ortografia</h1>
+      <p class="instructions">
+        Benvingut/da al concurs ortogràfic! Supera els 10 nivells de dificultat responent correctament a les preguntes. Observem ben bé com s'escriuen les paraules i demostra la teva memòria visual.
+      </p>
+      <button class="btn-main" onclick="startGame()" autofocus>Comença</button>
+    </div>
+
+    <!-- TAULER DE JOC -->
+    <div id="screen-game" class="screen hidden">
+      <div class="game-header">
+        <div class="level-badge" id="level-display">Nivell 1 / 10</div>
+        <div class="score-badge" id="score-display">Punts: 0</div>
+      </div>
+
+      <div class="question-box">
+        <div class="question-text" id="question-text">Pista de la pregunta...</div>
+      </div>
+
+      <div class="options-grid" id="options-container">
+        <!-- Els botons es generen amb JS -->
+      </div>
+
+      <div class="feedback-area" id="feedback-area">
+        <div id="feedback-message" class="feedback-message"></div>
+        <div id="correct-word" class="correct-word-display hidden"></div>
+        <button id="btn-next" class="btn-main hidden" onclick="nextLevel()">Continua</button>
+        <button id="btn-restart" class="btn-main hidden" onclick="restartGame()">Torna a començar</button>
+      </div>
+
+      <div class="ladder" id="ladder-container">
+        <!-- Escala de punts生成 amb JS -->
+      </div>
+    </div>
+
+    <!-- PANTALLA FINAL (VICTÒRIA) -->
+    <div id="screen-end" class="screen hidden">
+      <h1>Moltes felicitats!</h1>
+      <p class="instructions">
+        Has superat tots els nivells i has aconseguit el premi màxim de <strong>50.000 punts</strong>!
+      </p>
+      <p class="instructions">Molt bona feina d'observació ortogràfica.</p>
+      <button class="btn-main" onclick="restartGame()" autofocus>Torna a jugar</button>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       BANC DE PREGUNTES (Fàcilment editable)
+       ========================================================================== */
+    const QUESTIONS_DATA = [
+      {
+        level: 1,
+        points: 100,
+        hint: "El dia en què ens trobem ara mateix és...",
+        correct: "avui",
+        options: ["abui", "avui", "havui", "avuy"]
+      },
+      {
+        level: 2,
+        points: 200,
+        hint: "De tant en tant, no sempre, passa...",
+        correct: "a vegades",
+        options: ["avegades", "a vegadas", "a vegades", "abegades"]
+      },
+      {
+        level: 3,
+        points: 400,
+        hint: "Una cosa que és agradable a la vista és...",
+        correct: "bonic",
+        options: ["bónic", "vonic", "bonik", "bonic"]
+      },
+      {
+        level: 4,
+        points: 800,
+        hint: "En aquell lloc allunyat d'aquí: anem cap...",
+        correct: "allí",
+        options: ["allí", "ali", "allì", "alí"]
+      },
+      {
+        level: 5,
+        points: 1600,
+        hint: "Un altre mot per indicar un lloc distant és...",
+        correct: "allà",
+        options: ["alà", "allà", "allá", "allha"]
+      },
+      {
+        level: 6,
+        points: 3200,
+        hint: "El dia anterior a avui era...",
+        correct: "ahir",
+        options: ["hair", "ahyr", "air", "ahir"]
+      },
+      {
+        level: 7,
+        points: 6400,
+        hint: "El dia següent a avui serà...",
+        correct: "demà",
+        options: ["dema", "demà", "damà", "demha"]
+      },
+      {
+        level: 8,
+        points: 12800,
+        hint: "Quan assenyalem un objecte proper diem: «Vull...»",
+        correct: "això",
+        options: ["aixó", "aixo", "això", "axò"]
+      },
+      {
+        level: 9,
+        points: 25600,
+        hint: "Primer farem l'activitat i, més tard,...",
+        correct: "després",
+        options: ["després", "despres", "desprèsp", "dasprés"]
+      },
+      {
+        level: 10,
+        points: 50000,
+        hint: "Una persona que està molt contenta i satisfeta se sent...",
+        correct: "feliç",
+        options: ["felis", "feliçt", "feliç", "felitz"]
+      }
+    ];
+
+    /* ==========================================================================
+       LÒGICA DE L'APLICACIÓ
+       ========================================================================== */
+    let currentLevelIndex = 0;
+    let currentScore = 0;
+    let currentShuffledOptions = [];
+
+    const letters = ['A', 'B', 'C', 'D'];
+
+    function startGame() {
+      currentLevelIndex = 0;
+      currentScore = 0;
+      showScreen('screen-game');
+      loadLevel();
+    }
+
+    function showScreen(screenId) {
+      document.getElementById('screen-start').classList.add('hidden');
+      document.getElementById('screen-game').classList.add('hidden');
+      document.getElementById('screen-end').classList.add('hidden');
+      document.getElementById(screenId).classList.remove('hidden');
+    }
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function renderLadder() {
+      const container = document.getElementById('ladder-container');
+      container.innerHTML = '';
+
+      QUESTIONS_DATA.forEach((q, index) => {
+        const step = document.createElement('div');
+        step.className = 'ladder-step';
+        if (index === currentLevelIndex) {
+          step.classList.add('active');
+        } else if (index < currentLevelIndex) {
+          step.classList.add('passed');
+        }
+        step.textContent = `${q.points} pt`;
+        container.appendChild(step);
+      });
+    }
+
+    function loadLevel() {
+      const qData = QUESTIONS_DATA[currentLevelIndex];
+      
+      document.getElementById('level-display').textContent = `Nivell ${qData.level} / ${QUESTIONS_DATA.length}`;
+      document.getElementById('score-display').textContent = `Punts: ${currentScore}`;
+      document.getElementById('question-text').textContent = qData.hint;
+
+      // Amagar missatges de feedback i botons d'acció
+      document.getElementById('feedback-message').textContent = '';
+      document.getElementById('correct-word').classList.add('hidden');
+      document.getElementById('btn-next').classList.add('hidden');
+      document.getElementById('btn-restart').classList.add('hidden');
+
+      // Barrejar opcions
+      currentShuffledOptions = shuffleArray(qData.options);
+
+      // Renderitzar botons d'opcions
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+      optionsContainer.style.display = 'grid';
+
+      currentShuffledOptions.forEach((optionText, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="option-letter">${letters[i]}:</span> ${optionText}`;
+        btn.onclick = () => selectOption(optionText, btn);
+        optionsContainer.appendChild(btn);
+      });
+
+      renderLadder();
+    }
+
+    function disableAllOptions() {
+      const buttons = document.querySelectorAll('.option-btn');
+      buttons.forEach(btn => btn.disabled = true);
+    }
+
+    function selectOption(selectedText, btnElement) {
+      disableAllOptions();
+      const qData = QUESTIONS_DATA[currentLevelIndex];
+
+      if (selectedText === qData.correct) {
+        // Encert
+        btnElement.classList.add('correct-selection');
+        currentScore = qData.points;
+        document.getElementById('score-display').textContent = `Punts: ${currentScore}`;
+        document.getElementById('feedback-message').textContent = "Molt bé! Resposta correcta.";
+        document.getElementById('feedback-message').style.color = "var(--accent-yellow)";
+
+        if (currentLevelIndex < QUESTIONS_DATA.length - 1) {
+          document.getElementById('btn-next').classList.remove('hidden');
+          document.getElementById('btn-next').focus();
+        } else {
+          // Ha completat tots els nivells
+          setTimeout(() => {
+            showScreen('screen-end');
+          }, 1500);
+        }
+      } else {
+        // Error
+        document.getElementById('options-container').style.display = 'none';
+        document.getElementById('feedback-message').textContent = "Observa com s'escriu:";
+        document.getElementById('feedback-message').style.color = "#ffffff";
+        
+        const wordDisplay = document.getElementById('correct-word');
+        wordDisplay.textContent = qData.correct;
+        wordDisplay.classList.remove('hidden');
+
+        document.getElementById('btn-restart').classList.remove('hidden');
+        document.getElementById('btn-restart').focus();
+      }
+    }
+
+    function nextLevel() {
+      currentLevelIndex++;
+      loadLevel();
+    }
+
+    function restartGame() {
+      startGame();
+    }
+  </script>
+</body>
+</html>
